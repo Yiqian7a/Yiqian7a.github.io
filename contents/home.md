@@ -1,17 +1,16 @@
 
 
-[![senli1073](https://img.shields.io/badge/senli1073-github-blue?logo=github)](https://github.com/senli1073)
+[![Yiqian7a](https://img.shields.io/badge/Yiqian7a-github-blue?logo=github)](https://github.com/Yiqian7a)
 
-He is currently a Fellow in the Department of Earth and Planetary Sciences (EPS) at Harvard University.
+Hi, I am Yuhao Liu, a undergraduat in Shandong University.
 
 #### Contact
 
-Email: senli[at]fas.harvard.edu
+Email: Yiqian7a@qq.com (prefered)
 
 #### Education
-M.E., Computer Science and Technology, China University of Mining and Technology, 2022—2025.\
-B.E., Data Science and Big Data Technology, China University of Mining and Technology, 2018—2022.
+Major Statistics(Artificial and Intelligence), Shandong University,  2022.09-2026.06
 
 #### Research Interests
-Deep Learning, Artificial Intelligence Seismology, Mine Microseismic.
+MLLM, Deep Learning, Artificial Intelligence.
 
