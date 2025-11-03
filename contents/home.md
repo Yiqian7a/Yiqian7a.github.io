@@ -2,7 +2,7 @@
 
 [![Yiqian7a](https://img.shields.io/badge/Yiqian7a-github-blue?logo=github)](https://github.com/Yiqian7a)
 
-Hi, I am Yuhao Liu, a undergraduat in Shandong University.
+Hi, I am Yuhao Liu, a undergraduate in Shandong University.
 
 #### Contact
 
