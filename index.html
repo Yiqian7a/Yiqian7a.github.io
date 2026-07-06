@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Academic homepage — research, publications, and experience.">
+  <meta property="og:title" content="Academic Homepage">
+  <meta property="og:description" content="Research interests, publications, education, and contact.">
+  <meta property="og:type" content="website">
+  <title>Academic Homepage</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav" aria-label="Main navigation">
+      <a href="#hero" class="nav-brand" id="nav-brand">Home</a>
+      <ul class="nav-links" id="nav-links"></ul>
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button type="button" class="lang-btn active" data-lang="en" aria-pressed="true">EN</button>
+        <span class="lang-divider">|</span>
+        <button type="button" class="lang-btn" data-lang="zh" aria-pressed="false">中文</button>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <div class="page-layout">
+      <aside class="sidebar">
+        <section id="hero" class="section hero"></section>
+        <section id="news" class="section section-optional"></section>
+      </aside>
+      <div class="main-content">
+        <section id="about" class="section"></section>
+        <section id="publications" class="section"></section>
+        <section id="education" class="section"></section>
+        <section id="experience" class="section section-optional"></section>
+        <section id="projects" class="section section-optional"></section>
+        <section id="awards" class="section section-optional"></section>
+        <section id="contact" class="section contact"></section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <p id="footer-text"></p>
+  </footer>
+
+  <script src="js/content.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
