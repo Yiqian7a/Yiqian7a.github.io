@@ -62,7 +62,7 @@ const CONTENT = {
       {
         year: "2026",
         title: "UniAfford: Token-Routed Multitask Learning for Generalizable 2D-3D Affordance Perception",
-        authors: "Yuhao Liu, Yiming Zhong, Hanqing Wang, Shaocheng Yan, Yuhang Zhang, Wenzhou Lyu, Ziyang Ding, Wei Zhang, Xue Zhao, Jin Pan, Yuexin Ma*, Xinge Zhu",
+        authors: "Yuhao Liu, Yiming Zhong, Hanqing Wang, Shaocheng Yan, Yuhang Zhang, Wenzhou Lyu, Ziyang Ding, Wei Zhang, Xue Zhao, Jin Pan, Yuexin Ma†, Xinge Zhu",
         tldr: "A token-routed multitask framework for generalizable 2D-3D affordance perception, unifying multiple affordance tasks within a single model.",
         figure: "assets/pubs/UniAfford.png",
         badges: [

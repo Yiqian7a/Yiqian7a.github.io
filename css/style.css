@@ -326,6 +326,20 @@ main {
   font-size: 0.95rem;
 }
 
+.about-text .pub-author-link,
+.about-text .pub-author-self {
+  color: var(--color-accent-hover);
+  font-weight: 600;
+}
+
+.about-text .pub-author-link {
+  text-decoration: none;
+}
+
+.about-text .pub-author-link:hover {
+  text-decoration: underline;
+}
+
 .about-tags-label {
   margin: 0 0 0.75rem;
   font-size: 0.875rem;

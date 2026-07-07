@@ -85,7 +85,7 @@
 
     document.getElementById("about").innerHTML = `
       <h2 class="section-title">${escapeHtml(title)}</h2>
-      <p class="about-text">${escapeHtml(data.text)}</p>
+      <p class="about-text">${linkPeopleInText(data.text)}</p>
       <p class="about-tags-label">${escapeHtml(data.tagsLabel)}</p>
       <div class="interest-tags">
         ${data.tags.map((tag) => `<span class="interest-tag">${escapeHtml(tag)}</span>`).join("")}
@@ -177,6 +177,26 @@
       .filter(Boolean);
 
     return names.map(renderAuthorName).join(", ");
+  }
+
+  function linkPeopleInText(text) {
+    if (typeof PEOPLE === "undefined" || !PEOPLE.length) {
+      return escapeHtml(text);
+    }
+
+    const names = PEOPLE.map((p) => (currentLang === "zh" ? p.zh : p.en)).filter(Boolean);
+    if (!names.length) return escapeHtml(text);
+
+    const pattern = [...names]
+      .sort((a, b) => b.length - a.length)
+      .map((name) => name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+      .join("|");
+    const re = new RegExp(`(${pattern})`, "g");
+
+    return text
+      .split(re)
+      .map((part, index) => (index % 2 === 1 ? renderAuthorName(part) : escapeHtml(part)))
+      .join("");
   }
 
   function renderPubLinks(links) {
