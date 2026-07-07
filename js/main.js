@@ -132,36 +132,119 @@
       .join("")}</div>`;
   }
 
+  function stripAuthorMarkers(name) {
+    const markers = name.match(/[\*†‡§]+$/);
+    return {
+      base: name.replace(/[\*†‡§]+$/g, "").trim(),
+      markers: markers ? markers[0] : "",
+    };
+  }
+
+  function findPerson(baseName) {
+    if (typeof PEOPLE === "undefined") return null;
+    return PEOPLE.find((p) => p.en === baseName || p.zh === baseName) || null;
+  }
+
+  function isSelfAuthor(baseName) {
+    if (baseName === SITE.name || baseName === SITE.nameZh) return true;
+    const person = findPerson(baseName);
+    return Boolean(person && person.isSelf);
+  }
+
+  function renderAuthorName(rawName) {
+    const { base, markers } = stripAuthorMarkers(rawName);
+    const person = findPerson(base);
+    const self = isSelfAuthor(base);
+
+    let inner;
+    if (person && person.url) {
+      inner = `<a href="${escapeHtml(person.url)}" class="pub-author-link" target="_blank" rel="noopener noreferrer">${escapeHtml(base)}</a>`;
+    } else {
+      inner = escapeHtml(base);
+    }
+
+    if (self) {
+      inner = `<strong class="pub-author-self">${inner}</strong>`;
+    }
+
+    return `${inner}${escapeHtml(markers)}`;
+  }
+
+  function renderAuthors(authorsStr) {
+    const names = authorsStr
+      .split(/[,，]/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    return names.map(renderAuthorName).join(", ");
+  }
+
+  function renderPubLinks(links) {
+    if (!links || !links.length) return "";
+    const items = links.filter((l) => l.url && l.url !== "#");
+    if (!items.length) return "";
+
+    return `<div class="pub-links">${items
+      .map((l) => {
+        const iconHtml = getPubLinkIconHtml(l);
+        return `<a class="pub-link" href="${escapeHtml(l.url)}" target="_blank" rel="noopener noreferrer">
+          <span class="pub-link-icon" aria-hidden="true">${iconHtml}</span>
+          <span class="pub-link-label">${escapeHtml(l.label)}</span>
+        </a>`;
+      })
+      .join("")}</div>`;
+  }
+
+  function renderPubHeader(pub) {
+    return `
+      <div class="pub-header">
+        <span class="pub-year">${escapeHtml(pub.year)}</span>
+        ${renderPubBadges(pub.badges)}
+      </div>`;
+  }
+
+  function renderPubAside(pub) {
+    if (!pub.figure) return "";
+    const alt = pub.title ? `${pub.title} pipeline` : "Publication figure";
+    return `
+      <div class="pub-aside">
+        ${renderPubHeader(pub)}
+        <div class="pub-figure">
+          <img class="pub-figure-zoomable" src="${escapeHtml(pub.figure)}" alt="${escapeHtml(alt)}" loading="lazy" draggable="false" tabindex="0" title="${currentLang === "zh" ? "点击查看大图" : "Click to enlarge"}">
+        </div>
+        ${renderPubLinks(pub.links)}
+      </div>`;
+  }
+
   function renderPublications() {
     const pubs = CONTENT[currentLang].publications;
     const title = CONTENT[currentLang].sections.publications;
+    const tldrLabel = CONTENT[currentLang].pubLabels.tldr;
 
     document.getElementById("publications").innerHTML = `
       <h2 class="section-title">${escapeHtml(title)}</h2>
       <ul class="pub-list">
         ${pubs
-          .map(
-            (pub) => `
-          <li class="pub-item">
-            <div class="pub-header">
-              <span class="pub-year">${escapeHtml(pub.year)}</span>
-              ${renderPubBadges(pub.badges)}
+          .map((pub) => {
+            const hasFigure = Boolean(pub.figure);
+            return `
+          <li class="pub-item${hasFigure ? " pub-item-has-figure" : ""}">
+            <div class="pub-layout">
+              ${hasFigure ? renderPubAside(pub) : ""}
+              <div class="pub-body">
+                ${hasFigure ? "" : renderPubHeader(pub)}
+                <p class="pub-title">${escapeHtml(pub.title)}</p>
+                <p class="pub-authors">${renderAuthors(pub.authors)}</p>
+                ${
+                  pub.tldr
+                    ? `<p class="pub-tldr"><span class="pub-tldr-label">${escapeHtml(tldrLabel)}</span> ${escapeHtml(pub.tldr)}</p>`
+                    : ""
+                }
+                ${hasFigure ? "" : renderPubLinks(pub.links)}
+              </div>
             </div>
-            <p class="pub-title">${escapeHtml(pub.title)}</p>
-            <p class="pub-authors">${escapeHtml(pub.authors)}</p>
-            <p class="pub-tldr">${escapeHtml(pub.tldr)}</p>
-            ${
-              pub.links && pub.links.length
-                ? `<div class="pub-links">${pub.links
-                    .map(
-                      (l) =>
-                        `<a class="pub-link" href="${escapeHtml(l.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(l.label)}</a>`
-                    )
-                    .join("")}</div>`
-                : ""
-            }
-          </li>`
-          )
+          </li>`;
+          })
           .join("")}
       </ul>`;
   }

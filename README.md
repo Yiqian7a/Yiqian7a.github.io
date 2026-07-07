@@ -16,12 +16,15 @@
 ## 目录结构
 
 ```text
-├── index.html          # 页面骨架
-├── css/style.css       # 样式
-├── js/content.js       # 双语内容（主要编辑此文件）
-├── js/main.js          # 渲染与语言切换
-├── assets/photo.svg    # 头像占位图
-└── favicon.svg         # 站点图标
+├── index.html                  # 页面骨架
+├── css/style.css               # 样式
+├── js/content.js               # 双语内容（主要编辑此文件）
+├── js/people.js                # 作者主页链接注册表
+├── js/main.js                  # 渲染与语言切换
+├── scripts/extract-people.js   # 从 content.js 提取作者人名
+├── assets/photo.svg            # 头像占位图
+├── assets/pubs/                # 论文 pipeline 图
+└── favicon.svg                 # 站点图标
 ```
 
 ## 本地预览
@@ -70,6 +73,7 @@ about: {
   title: "Paper Title",
   authors: "Your Name, Co-author",
   tldr: "一句话概括论文核心贡献与方法。",
+  figure: "assets/pubs/paper-pipeline.svg",  // 可选，左侧 pipeline 图
   badges: [
     { text: "CVPR 2026", type: "venue" },   // 会议标签
     { text: "投稿中", type: "status" },      // 状态标签
@@ -77,12 +81,43 @@ about: {
   ],
   links: [
     { label: "PDF", url: "https://..." },
-    { label: "Code", url: "https://github.com/..." },
+    { label: "Page", url: "https://..." },
+    { label: "OpenReview", url: "https://openreview.net/..." },
+    // { label: "Code", url: "...", icon: "code" },  // icon 可省略，按 label/url 自动匹配
   ],
 }
 ```
 
-`badges` 为可选字段。`type` 支持 `venue`（会议，蓝色）、`status`（投稿中等，橙色）、`accepted`（已接收，绿色）；省略 `type` 时使用默认样式。中英文版本的 `badges.text` 可分别填写（如英文 "Under Review"、中文 "投稿中"）。
+`badges` 为可选字段。`figure` 为可选字段，支持 svg/png，显示在论文条目左侧。`type` 支持 `venue`（会议，蓝色）、`status`（投稿中等，橙色）、`accepted`（已接收，绿色）；省略 `type` 时使用默认样式。中英文版本的 `badges.text` 可分别填写（如英文 "Under Review"、中文 "投稿中"）。
+
+链接支持图标：根据 `label` 或 `url` 自动匹配（PDF、Page、Code、OpenReview、arXiv、Video 等），也可用 `icon` 字段手动指定（见 [`js/link-icons.js`](js/link-icons.js)）。`url` 为空的链接不会显示。
+
+### 作者外链与姓名加粗
+
+作者链接在 [`js/people.js`](js/people.js) 中维护。论文作者列表会自动：
+
+- 为已在 `people.js` 中填写 `url` 的姓名添加主页链接
+- 为本人姓名（`isSelf: true` 或与 `SITE.name` / `SITE.nameZh` 匹配）**加粗**显示
+- 保留 `*`、`†` 等通讯作者/贡献标记
+
+```javascript
+{ en: "Yuexin Ma", zh: "马月昕", url: "https://yuexin-ma.github.io" },
+{ en: "Yuhao Liu", zh: "刘宇昊", url: "https://yiqian7a.github.io", isSelf: true },
+```
+
+### 提取作者人名脚本
+
+新增论文作者后，可运行脚本自动提取中英文姓名并合并到 `people.js`（**不会覆盖已有 url**）：
+
+```bash
+# 仅查看提取结果
+node scripts/extract-people.js
+
+# 合并写入 js/people.js
+node scripts/extract-people.js --write
+```
+
+脚本会按 `publications` 中 en/zh 作者列表的位次配对中英文姓名。提取后手动补全各作者的 `url` 即可。
 
 ### 启用可选模块
 
