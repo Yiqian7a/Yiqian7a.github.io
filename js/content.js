@@ -41,7 +41,7 @@ const CONTENT = {
       contact: "Contact",
     },
     hero: {
-      affiliation: "M.S. Candidate, Example University",
+      affiliation: "Shandong University",
       bio: "From LLMs to embodied agents — pushing AI toward real-world impact.",
       cvLabel: "Download CV",
     },
