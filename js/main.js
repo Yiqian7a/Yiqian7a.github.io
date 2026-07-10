@@ -2,7 +2,25 @@
   "use strict";
 
   const LANG_KEY = "homepage-lang";
+  const PUB_CONTROLS_KEY = "homepage-pub-controls";
   let currentLang = localStorage.getItem(LANG_KEY) || "en";
+  let pubControlsState = loadPubControlsState();
+  let pubMenuBound = false;
+
+  function loadPubControlsState() {
+    const defaults = { filter: "all", sort: "default" };
+    try {
+      const raw = localStorage.getItem(PUB_CONTROLS_KEY);
+      if (!raw) return defaults;
+      return { ...defaults, ...JSON.parse(raw) };
+    } catch (_) {
+      return defaults;
+    }
+  }
+
+  function savePubControlsState() {
+    localStorage.setItem(PUB_CONTROLS_KEY, JSON.stringify(pubControlsState));
+  }
 
   function t(key) {
     const parts = key.split(".");
@@ -236,37 +254,271 @@
       </div>`;
   }
 
-  function renderPublications() {
-    const pubs = CONTENT[currentLang].publications;
-    const title = CONTENT[currentLang].sections.publications;
+  function getSelfAuthorRoles(authorsStr) {
+    const names = authorsStr
+      .split(/[,，]/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+    const roles = new Set();
+
+    for (let i = 0; i < names.length; i++) {
+      const { base, markers } = stripAuthorMarkers(names[i]);
+      if (!isSelfAuthor(base)) continue;
+
+      if (i === 0) roles.add("first");
+      if (markers.includes("*")) roles.add("co-first");
+      if (/[†‡]/.test(markers)) roles.add("corresponding");
+      if (i > 0 && !markers.includes("*")) roles.add("coauthor");
+    }
+
+    return [...roles];
+  }
+
+  function parsePubYear(pub) {
+    const y = parseInt(String(pub.year).split(/[.\-/]/)[0], 10);
+    return Number.isFinite(y) ? y : 0;
+  }
+
+  function pubCitations(pub) {
+    if (window.PubCitations) return PubCitations.getEffective(pub);
+    const c = pub.citations;
+    return typeof c === "number" && Number.isFinite(c) ? c : -1;
+  }
+
+  function getSiteUpdatedLabel(lang) {
+    const time = window.SiteUpdated?.getFormatted(lang);
+    if (!time) return "";
+    return CONTENT[lang].siteMeta.lastUpdated.replace("{time}", time);
+  }
+
+  function getCitationStatusText(labels) {
+    const updated = getSiteUpdatedLabel(currentLang);
+    if (!updated) return labels.citationsNote;
+    const gap = currentLang === "zh" ? "" : " ";
+    return `${labels.citationsNote}${gap}${updated}`;
+  }
+
+  function updatePubCitationStatus() {
+    const status = document.querySelector("[data-pub-citation-status]");
+    if (status) {
+      status.textContent = getCitationStatusText(CONTENT[currentLang].pubControls);
+    }
+  }
+
+  function pubMatchesFilter(pub, filter) {
+    if (filter === "all") return true;
+    const roles = getSelfAuthorRoles(pub.authors);
+    return roles.includes(filter);
+  }
+
+  function filterAndSortPublications(pubs, state) {
+    const filtered = pubs.filter((pub) => pubMatchesFilter(pub, state.filter));
+    const sorted = [...filtered];
+
+    switch (state.sort) {
+      case "year-desc":
+        sorted.sort(
+          (a, b) => parsePubYear(b) - parsePubYear(a) || a._idx - b._idx
+        );
+        break;
+      case "year-asc":
+        sorted.sort(
+          (a, b) => parsePubYear(a) - parsePubYear(b) || a._idx - b._idx
+        );
+        break;
+      case "citations-desc":
+        sorted.sort((a, b) => {
+          const diff = pubCitations(b) - pubCitations(a);
+          if (diff !== 0) return diff;
+          return parsePubYear(b) - parsePubYear(a) || a._idx - b._idx;
+        });
+        break;
+      default:
+        sorted.sort((a, b) => a._idx - b._idx);
+    }
+
+    return sorted;
+  }
+
+  function renderPubItem(pub) {
     const tldrLabel = CONTENT[currentLang].pubLabels.tldr;
+    const hasFigure = Boolean(pub.figure);
+
+    return `
+      <li class="pub-item${hasFigure ? " pub-item-has-figure" : ""}">
+        <div class="pub-layout">
+          ${hasFigure ? renderPubAside(pub) : ""}
+          <div class="pub-body">
+            ${hasFigure ? "" : renderPubHeader(pub)}
+            <p class="pub-title">${escapeHtml(pub.title)}</p>
+            <p class="pub-authors">${renderAuthors(pub.authors)}</p>
+            ${
+              pub.tldr
+                ? `<p class="pub-tldr"><span class="pub-tldr-label">${escapeHtml(tldrLabel)}</span> ${escapeHtml(pub.tldr)}</p>`
+                : ""
+            }
+            ${hasFigure ? "" : renderPubLinks(pub.links)}
+          </div>
+        </div>
+      </li>`;
+  }
+
+  function renderPubListHtml(pubs, labels) {
+    if (!pubs.length) {
+      return `<p class="pub-empty-msg">${escapeHtml(labels.emptyResult)}</p>`;
+    }
+
+    return `<ul class="pub-list">${pubs.map(renderPubItem).join("")}</ul>`;
+  }
+
+  function renderPubMenu(labels) {
+    const { filter, sort } = pubControlsState;
+
+    return `
+      <div class="pub-menu">
+        <button type="button" class="pub-menu-btn" aria-label="${escapeHtml(labels.menuLabel)}" aria-expanded="false" aria-haspopup="true">···</button>
+        <div class="pub-menu-panel" hidden>
+          <label class="pub-menu-field">
+            <span class="pub-menu-label">${escapeHtml(labels.filterLabel)}</span>
+            <select data-pub-control="filter">
+              <option value="all"${filter === "all" ? " selected" : ""}>${escapeHtml(labels.filterAll)}</option>
+              <option value="first"${filter === "first" ? " selected" : ""}>${escapeHtml(labels.filterFirst)}</option>
+              <option value="co-first"${filter === "co-first" ? " selected" : ""}>${escapeHtml(labels.filterCoFirst)}</option>
+              <option value="corresponding"${filter === "corresponding" ? " selected" : ""}>${escapeHtml(labels.filterCorresponding)}</option>
+              <option value="coauthor"${filter === "coauthor" ? " selected" : ""}>${escapeHtml(labels.filterCoauthor)}</option>
+            </select>
+          </label>
+          <label class="pub-menu-field">
+            <span class="pub-menu-label">${escapeHtml(labels.sortLabel)}</span>
+            <select data-pub-control="sort">
+              <option value="default"${sort === "default" ? " selected" : ""}>${escapeHtml(labels.sortDefault)}</option>
+              <option value="year-desc"${sort === "year-desc" ? " selected" : ""}>${escapeHtml(labels.sortYearDesc)}</option>
+              <option value="year-asc"${sort === "year-asc" ? " selected" : ""}>${escapeHtml(labels.sortYearAsc)}</option>
+              <option value="citations-desc"${sort === "citations-desc" ? " selected" : ""}>${escapeHtml(labels.sortCitationsDesc)}</option>
+            </select>
+          </label>
+          <div class="pub-menu-actions">
+            <button type="button" class="pub-menu-refresh" data-pub-refresh>${escapeHtml(labels.refreshCitations)}</button>
+          </div>
+          <p class="pub-menu-note" data-pub-citation-status>${escapeHtml(getCitationStatusText(labels))}</p>
+        </div>
+      </div>`;
+  }
+
+  async function refreshPublicationCitations() {
+    const labels = CONTENT[currentLang].pubControls;
+    const btn = document.querySelector("[data-pub-refresh]");
+    const status = document.querySelector("[data-pub-citation-status]");
+    if (!btn || !window.PubCitations) return;
+
+    const pubs = CONTENT.en.publications.map((pub, idx) => ({ ...pub, _idx: idx }));
+    btn.disabled = true;
+    btn.textContent = labels.refreshingCitations;
+    if (status) status.textContent = labels.refreshingCitations;
+
+    try {
+      const result = await PubCitations.refreshAll(pubs);
+      updatePubList();
+      if (status) {
+        status.textContent = labels.refreshDone
+          .replace("{n}", String(result.updated))
+          .replace("{total}", String(result.total));
+        window.setTimeout(updatePubCitationStatus, 3000);
+      }
+    } catch (_) {
+      if (status) status.textContent = labels.refreshFailed;
+      window.setTimeout(updatePubCitationStatus, 3000);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = labels.refreshCitations;
+    }
+  }
+
+  function closePubMenu() {
+    const panel = document.querySelector("#publications .pub-menu-panel");
+    const btn = document.querySelector("#publications .pub-menu-btn");
+    if (panel && !panel.hidden) {
+      panel.hidden = true;
+      btn?.setAttribute("aria-expanded", "false");
+    }
+  }
+
+  function updatePubList() {
+    const pubs = CONTENT[currentLang].publications.map((pub, idx) => ({
+      ...pub,
+      _idx: idx,
+    }));
+    const labels = CONTENT[currentLang].pubControls;
+    const filtered = filterAndSortPublications(pubs, pubControlsState);
+    const wrap = document.querySelector("#publications .pub-list-wrap");
+    if (wrap) wrap.innerHTML = renderPubListHtml(filtered, labels);
+  }
+
+  function bindPubMenuEvents() {
+    if (pubMenuBound) return;
+    pubMenuBound = true;
+
+    const section = document.getElementById("publications");
+    if (!section) return;
+
+    section.addEventListener("click", (e) => {
+      if (e.target.closest("[data-pub-refresh]")) {
+        e.stopPropagation();
+        refreshPublicationCitations();
+        return;
+      }
+
+      const btn = e.target.closest(".pub-menu-btn");
+      if (btn) {
+        e.stopPropagation();
+        const panel = btn.closest(".pub-menu").querySelector(".pub-menu-panel");
+        const opening = panel.hidden;
+        panel.hidden = !opening;
+        btn.setAttribute("aria-expanded", opening ? "true" : "false");
+        return;
+      }
+
+      if (!e.target.closest(".pub-menu-panel")) {
+        closePubMenu();
+      }
+    });
+
+    section.addEventListener("change", (e) => {
+      const control = e.target.closest("[data-pub-control]");
+      if (!control) return;
+      pubControlsState[control.dataset.pubControl] = control.value;
+      savePubControlsState();
+      updatePubList();
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".pub-menu")) closePubMenu();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closePubMenu();
+    });
+  }
+
+  function renderPublications() {
+    const pubs = CONTENT[currentLang].publications.map((pub, idx) => ({
+      ...pub,
+      _idx: idx,
+    }));
+    const title = CONTENT[currentLang].sections.publications;
+    const labels = CONTENT[currentLang].pubControls;
+    const filtered = filterAndSortPublications(pubs, pubControlsState);
 
     document.getElementById("publications").innerHTML = `
-      <h2 class="section-title">${escapeHtml(title)}</h2>
-      <ul class="pub-list">
-        ${pubs
-          .map((pub) => {
-            const hasFigure = Boolean(pub.figure);
-            return `
-          <li class="pub-item${hasFigure ? " pub-item-has-figure" : ""}">
-            <div class="pub-layout">
-              ${hasFigure ? renderPubAside(pub) : ""}
-              <div class="pub-body">
-                ${hasFigure ? "" : renderPubHeader(pub)}
-                <p class="pub-title">${escapeHtml(pub.title)}</p>
-                <p class="pub-authors">${renderAuthors(pub.authors)}</p>
-                ${
-                  pub.tldr
-                    ? `<p class="pub-tldr"><span class="pub-tldr-label">${escapeHtml(tldrLabel)}</span> ${escapeHtml(pub.tldr)}</p>`
-                    : ""
-                }
-                ${hasFigure ? "" : renderPubLinks(pub.links)}
-              </div>
-            </div>
-          </li>`;
-          })
-          .join("")}
-      </ul>`;
+      <div class="pub-section-head">
+        <h2 class="section-title">${escapeHtml(title)}</h2>
+        ${renderPubMenu(labels)}
+      </div>
+      <div class="pub-list-wrap">
+        ${renderPubListHtml(filtered, labels)}
+      </div>`;
+
+    bindPubMenuEvents();
   }
 
   function renderNews() {
@@ -379,8 +631,17 @@
   }
 
   function renderFooter() {
-    document.getElementById("footer-text").textContent =
-      CONTENT[currentLang].footer;
+    const footer = CONTENT[currentLang].footer;
+    const updated = getSiteUpdatedLabel(currentLang);
+    let text;
+    if (!updated) {
+      text = footer.fallback || footer.prefix;
+    } else if (currentLang === "zh") {
+      text = `${footer.prefix}${updated}`;
+    } else {
+      text = `${footer.prefix} ${updated}`;
+    }
+    document.getElementById("footer-text").textContent = text;
   }
 
   function updateMeta() {
@@ -424,5 +685,10 @@
     btn.addEventListener("click", () => setLang(btn.dataset.lang));
   });
 
-  setLang(currentLang);
+  async function bootstrap() {
+    if (window.SiteUpdated) await SiteUpdated.init();
+    setLang(currentLang);
+  }
+
+  bootstrap();
 })();

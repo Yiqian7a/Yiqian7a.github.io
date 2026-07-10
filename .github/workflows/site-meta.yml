@@ -1,0 +1,23 @@
+name: Update site meta
+
+on:
+  push:
+    branches: [main, master]
+
+jobs:
+  site-meta:
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate site-updated.json
+        run: node scripts/update-site-meta.js
+
+      - name: Commit site meta
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: update site last updated timestamp [skip ci]"
+          file_pattern: assets/site-updated.json

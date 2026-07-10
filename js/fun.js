@@ -130,7 +130,7 @@
   function isInteractive(el) {
     if (!el || el === document.documentElement) return false;
     if (el.closest(".lightbox")) return true;
-    if (el.closest("a, button, input, select, textarea, label, .lang-btn, .pub-link, .pub-author-link")) {
+    if (el.closest("a, button, input, select, textarea, label, .lang-btn, .pub-link, .pub-author-link, .pub-menu")) {
       return true;
     }
     if (el.closest(".pub-figure-zoomable")) return true;

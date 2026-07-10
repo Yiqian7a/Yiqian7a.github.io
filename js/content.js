@@ -11,6 +11,11 @@ const SITE = {
     orcid: "https://orcid.org/",
     linkedin: "https://linkedin.com/in/",
   },
+  repo: {
+    owner: "Yiqian7a",
+    name: "Yiqian7a.github.io",
+    metaPath: "assets/site-updated.json",
+  },
 };
 
 const CONTENT = {
@@ -74,6 +79,7 @@ const CONTENT = {
           { label: "Page", url: "https://4dvlab.github.io/UniAfford" },
 
         ],
+        citations: 0,
       },
     ],
     news: [],
@@ -84,7 +90,13 @@ const CONTENT = {
     contact: {
       intro: "Feel free to reach out via email or the links below.",
     },
-    footer: "© 2026 Yuhao Liu. Last updated: July 2026.",
+    footer: {
+      prefix: "© 2026 Yuhao Liu.",
+      fallback: "© 2026 Yuhao Liu.",
+    },
+    siteMeta: {
+      lastUpdated: "Last updated: {time}.",
+    },
     linkLabels: {
       github: "GitHub",
       scholar: "Google Scholar",
@@ -94,6 +106,27 @@ const CONTENT = {
     },
     pubLabels: {
       tldr: "TL;DR",
+    },
+    pubControls: {
+      menuLabel: "Filter and sort publications",
+      filterLabel: "Author role",
+      sortLabel: "Sort by",
+      filterAll: "All",
+      filterFirst: "First author",
+      filterCoFirst: "Co-first author",
+      filterCorresponding: "Corresponding author",
+      filterCoauthor: "Co-author",
+      sortDefault: "Default",
+      sortYearDesc: "Year (newest first)",
+      sortYearAsc: "Year (oldest first)",
+      sortCitationsDesc: "Citations (high → low)",
+      citationsNote:
+        "Use Refresh to manually query OpenAlex / Semantic Scholar (counts may differ from Scholar).",
+      refreshCitations: "Refresh citations",
+      refreshingCitations: "Refreshing…",
+      refreshDone: "Updated {n}/{total} papers.",
+      refreshFailed: "Could not refresh citations. Try again later.",
+      emptyResult: "No publications match this filter.",
     },
   },
 
@@ -157,6 +190,7 @@ const CONTENT = {
           { label: "Page", url: "https://4dvlab.github.io/UniAfford" },
 
         ],
+        citations: 0,
       },
     ],
     news: [],
@@ -167,7 +201,13 @@ const CONTENT = {
     contact: {
       intro: "欢迎通过邮件或以下链接与我联系。",
     },
-    footer: "© 2026 刘宇昊。最后更新：2026 年 7 月。",
+    footer: {
+      prefix: "© 2026 刘宇昊。",
+      fallback: "© 2026 刘宇昊。",
+    },
+    siteMeta: {
+      lastUpdated: "最后更新：{time}。",
+    },
     linkLabels: {
       github: "GitHub",
       scholar: "Google Scholar",
@@ -177,6 +217,27 @@ const CONTENT = {
     },
     pubLabels: {
       tldr: "TL;DR",
+    },
+    pubControls: {
+      menuLabel: "筛选与排序论文",
+      filterLabel: "作者位次",
+      sortLabel: "排序",
+      filterAll: "全部",
+      filterFirst: "第一作者",
+      filterCoFirst: "共同第一作者",
+      filterCorresponding: "通讯作者",
+      filterCoauthor: "合作作者",
+      sortDefault: "默认顺序",
+      sortYearDesc: "年份（新→旧）",
+      sortYearAsc: "年份（旧→新）",
+      sortCitationsDesc: "引用量（高→低）",
+      citationsNote:
+        "点击「更新引用量」手动从 OpenAlex / Semantic Scholar 获取（数值可能与 Google 学术不同）",
+      refreshCitations: "更新引用量",
+      refreshingCitations: "正在更新…",
+      refreshDone: "已更新 {n}/{total} 篇论文。",
+      refreshFailed: "引用量更新失败，请稍后再试。",
+      emptyResult: "当前筛选条件下暂无论文。",
     },
   },
 };
