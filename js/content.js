@@ -70,14 +70,13 @@ const CONTENT = {
         authors: "Yuhao Liu, Yiming Zhong, Hanqing Wang, Shaocheng Yan, Yuhang Zhang, Wenzhou Lyu, Ziyang Ding, Wei Zhang, Xue Zhao, Jin Pan, Yuexin Ma†, Xinge Zhu",
         tldr: "A token-routed multitask framework for generalizable 2D-3D affordance perception, unifying multiple affordance tasks within a single model.",
         figure: "assets/pubs/UniAfford.png",
+        preprint: true,
         badges: [
-
           { text: "Preprint", type: "status" },
         ],
         links: [
           { label: "PDF", url: "" },
           { label: "Page", url: "https://4dvlab.github.io/UniAfford" },
-
         ],
         citations: 0,
       },
@@ -181,14 +180,13 @@ const CONTENT = {
         authors: "刘宇昊, 钟奕鸣, 王涵情, 颜绍程, 张宇航, 吕文周, 丁子杨, 张伟, 赵雪, 潘津, 马月昕†, 祝新革",
         tldr: "提出一种基于 token 路由的多任务学习框架，实现可泛化的 2D-3D 可供性感知，统一跨任务与跨模态学习。",
         figure: "assets/pubs/UniAfford.png",
+        preprint: true,
         badges: [
-
           { text: "Preprint", type: "status" },
         ],
         links: [
           { label: "PDF", url: "" },
           { label: "Page", url: "https://4dvlab.github.io/UniAfford" },
-
         ],
         citations: 0,
       },

@@ -140,6 +140,26 @@
       </ul>`;
   }
 
+  function isPubPreprint(pub) {
+    return Boolean(pub.preprint);
+  }
+
+  function getVisiblePubBadges(pub) {
+    const badges = pub.badges || [];
+    if (!isPubPreprint(pub)) return badges;
+    return badges.filter((badge) => badge.type !== "venue");
+  }
+
+  function getVisiblePubLinks(pub) {
+    const links = pub.links || [];
+    if (!isPubPreprint(pub)) return links;
+    return links.filter((link) => {
+      const label = String(link.label || "").toLowerCase();
+      const url = String(link.url || "").toLowerCase();
+      return !label.includes("openreview") && !url.includes("openreview.net");
+    });
+  }
+
   function renderPubBadges(badges) {
     if (!badges || !badges.length) return "";
     return `<div class="pub-badges">${badges
@@ -237,7 +257,7 @@
     return `
       <div class="pub-header">
         <span class="pub-year">${escapeHtml(pub.year)}</span>
-        ${renderPubBadges(pub.badges)}
+        ${renderPubBadges(getVisiblePubBadges(pub))}
       </div>`;
   }
 
@@ -250,7 +270,7 @@
         <div class="pub-figure">
           <img class="pub-figure-zoomable" src="${escapeHtml(pub.figure)}" alt="${escapeHtml(alt)}" loading="lazy" draggable="false" tabindex="0" title="${currentLang === "zh" ? "点击查看大图" : "Click to enlarge"}">
         </div>
-        ${renderPubLinks(pub.links)}
+        ${renderPubLinks(getVisiblePubLinks(pub))}
       </div>`;
   }
 
@@ -357,7 +377,7 @@
                 ? `<p class="pub-tldr"><span class="pub-tldr-label">${escapeHtml(tldrLabel)}</span> ${escapeHtml(pub.tldr)}</p>`
                 : ""
             }
-            ${hasFigure ? "" : renderPubLinks(pub.links)}
+            ${hasFigure ? "" : renderPubLinks(getVisiblePubLinks(pub))}
           </div>
         </div>
       </li>`;
