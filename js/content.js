@@ -75,8 +75,8 @@ const CONTENT = {
           { text: "Preprint", type: "status" },
         ],
         links: [
-          { label: "PDF", url: "" },
           { label: "Page", url: "https://4dvlab.github.io/UniAfford" },
+          { label: "Arxiv", url: "https://arxiv.org/abs/2609.37264" },
         ],
         citations: 0,
       },
@@ -185,8 +185,8 @@ const CONTENT = {
           { text: "Preprint", type: "status" },
         ],
         links: [
-          { label: "PDF", url: "" },
           { label: "Page", url: "https://4dvlab.github.io/UniAfford" },
+          { label: "Arxiv", url: "https://arxiv.org/abs/2609.37264" },
         ],
         citations: 0,
       },
