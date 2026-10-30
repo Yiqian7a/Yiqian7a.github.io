@@ -6,6 +6,7 @@
   let currentLang = localStorage.getItem(LANG_KEY) || "en";
   let pubControlsState = loadPubControlsState();
   let pubMenuBound = false;
+  let newsExpanded = false;
 
   function loadPubControlsState() {
     const defaults = { filter: "all", sort: "default" };
@@ -51,10 +52,11 @@
       { id: "experience", label: nav.experience },
       { id: "projects", label: nav.projects },
       { id: "awards", label: nav.awards },
-      { id: "contact", label: nav.contact },
     ];
 
     document.getElementById("nav-links").innerHTML = items
+      .filter((item) => item.id !== "experience" || CONTENT[currentLang].experience.some((entry) => window.SiteVisibility.allows(entry)))
+      .filter((item) => item.id !== "news" || CONTENT[currentLang].news.some((entry) => window.SiteVisibility.allows(entry)))
       .map(
         (item) =>
           `<li><a href="#${item.id}">${escapeHtml(item.label)}</a></li>`
@@ -62,10 +64,35 @@
       .join("");
   }
 
-  function renderHero() {
+  /**
+   * 生成联系方式的装饰图标，链接名称仍由可见文字提供。
+   *
+   * Args:
+   *   key (string): 联系方式类型。
+   *
+   * Returns:
+   *   string: 不参与无障碍朗读的 SVG 标记。
+   */
+  function renderContactIcon(key) {
+    const paths = {
+      email: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 6 9 7 9-7"/>',
+      github: '<path d="M9 19c-4 1-4-2-6-2m12 5v-4a3.5 3.5 0 0 0-1-3c3-.3 6-1.5 6-6a4.7 4.7 0 0 0-1.3-3.3A4.3 4.3 0 0 0 18.6 2S17.4 1.7 15 3a13.4 13.4 0 0 0-6 0C6.6 1.7 5.4 2 5.4 2a4.3 4.3 0 0 0-.1 3.7A4.7 4.7 0 0 0 4 9c0 4.5 3 5.7 6 6a3.5 3.5 0 0 0-1 3v4"/>',
+      scholar: '<path d="m2 9 10-6 10 6-10 6-10-6Zm4 3v6c4 3 8 3 12 0v-6m4-3v8"/>',
+      orcid: '<circle cx="12" cy="12" r="9"/><path d="M8 10v7m0-10v.1M12 7h2a5 5 0 0 1 0 10h-2V7Z"/>',
+      linkedin: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 10v7m0-10v.1m5 10v-7m0 3a3 3 0 0 1 6 0v4"/>',
+    };
+    return `<svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${paths[key] || paths.email}</svg>`;
+  }
+
+  /**
+   * 生成左侧简介下方的联系方式和可用简历入口。
+   *
+   * Returns:
+   *   string: 联系方式列表的 HTML。
+   */
+  function renderProfileLinks() {
     const hero = CONTENT[currentLang].hero;
     const labels = CONTENT[currentLang].linkLabels;
-    const name = currentLang === "zh" ? SITE.nameZh : SITE.name;
 
     const linkItems = [
       { key: "email", url: `mailto:${SITE.email}`, label: labels.email },
@@ -77,7 +104,7 @@
       .filter((l) => l.url && !l.url.endsWith("/"))
       .map(
         (l) =>
-          `<li><a href="${escapeHtml(l.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(l.label)}</a></li>`
+          `<li><a href="${escapeHtml(l.url)}" target="_blank" rel="noopener noreferrer">${renderContactIcon(l.key)}<span>${escapeHtml(l.label)}</span></a></li>`
       )
       .join("");
 
@@ -86,33 +113,52 @@
         ? `<div class="hero-cv"><a class="btn-cv" href="${escapeHtml(SITE.cvUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(hero.cvLabel)}</a></div>`
         : "";
 
-    document.getElementById("hero").innerHTML = `
-      <img class="hero-photo" src="${escapeHtml(SITE.photo)}" alt="${escapeHtml(name)}" width="180" height="180">
-      <div class="hero-body">
-        <h1 class="hero-name">${escapeHtml(name)}</h1>
-        <p class="hero-affiliation">${escapeHtml(hero.affiliation)}</p>
-        <p class="hero-bio">${escapeHtml(hero.bio)}</p>
-        <ul class="hero-links">${linkItems}</ul>
-        ${cvBtn}
-      </div>`;
+    return `<ul class="hero-links">${linkItems}</ul>${cvBtn}`;
   }
 
+  /**
+   * 集中渲染左侧个人介绍和博士意向，右侧仅保留照片。
+   *
+   * Returns:
+   *   void: 更新简介和照片区域。
+   */
   function renderAbout() {
     const data = CONTENT[currentLang].about;
-    const title = CONTENT[currentLang].sections.about;
+    const hero = CONTENT[currentLang].hero;
+    const name = currentLang === "zh" ? SITE.nameZh : SITE.name;
+    const otherName = currentLang === "zh" ? SITE.name : SITE.nameZh;
 
+    document.getElementById("hero").innerHTML = `<img class="hero-photo" src="${escapeHtml(SITE.photo)}" alt="${escapeHtml(name)}" width="460" height="618" fetchpriority="high" decoding="async">`;
     document.getElementById("about").innerHTML = `
-      <h2 class="section-title">${escapeHtml(title)}</h2>
+      <h1 class="profile-name">${escapeHtml(name)} <span>/ ${escapeHtml(otherName)}</span></h1>
+      <p class="profile-role">${escapeHtml(hero.affiliation)}</p>
       <p class="about-text">${linkPeopleInText(data.text)}</p>
-      <p class="about-tags-label">${escapeHtml(data.tagsLabel)}</p>
-      <div class="interest-tags">
+      <div class="interest-tags" aria-label="${escapeHtml(data.tagsLabel)}">
         ${data.tags.map((tag) => `<span class="interest-tag">${escapeHtml(tag)}</span>`).join("")}
-      </div>`;
+      </div>
+      <p class="opportunity"><span class="opportunity-dot" aria-hidden="true"></span><span>${escapeHtml(data.opportunity)}</span></p>
+      ${renderProfileLinks()}`;
   }
 
+  /**
+   * 渲染简洁的图标、机构、身份与时间，保留地区展示条件。
+   *
+   * Args:
+   *   sectionId (string): 目标区域的元素 ID。
+   *   dataKey (string): 对应的双语内容字段。
+   *
+   * Returns:
+   *   void: 更新区域内容和可见性。
+   */
   function renderTimeline(sectionId, dataKey) {
-    const items = CONTENT[currentLang][dataKey];
+    const items = CONTENT[currentLang][dataKey].filter((item) => window.SiteVisibility.allows(item));
     const title = CONTENT[currentLang].sections[dataKey];
+    const section = document.getElementById(sectionId);
+    section.hidden = dataKey === "experience" && items.length === 0;
+    if (section.hidden) {
+      section.innerHTML = "";
+      return;
+    }
 
     if (!items || items.length === 0) {
       document.getElementById(sectionId).innerHTML = `
@@ -127,13 +173,16 @@
         ${items
           .map(
             (item) => `
-          <li class="timeline-item">
+          <li class="timeline-item${item.logo ? " timeline-item-with-logo" : ""}">
+            ${item.logo ? `<img class="institution-logo${item.logoTheme === "dark" ? " institution-logo-dark" : ""}" src="${escapeHtml(item.logo)}" alt="${escapeHtml(item.institution || item.company || "")}" width="100" height="56" loading="lazy">` : ""}
+            <div class="timeline-content">
             <div class="timeline-header">
-              <p class="timeline-title">${escapeHtml(item.title)}</p>
-              <span class="timeline-date">${escapeHtml(item.date)}</span>
+              <p class="timeline-title">${item.url ? `<a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.institution || item.company || "")}</a>` : escapeHtml(item.institution || item.company || "")}</p>
+              ${item.date ? `<span class="timeline-date">${escapeHtml(item.date)}</span>` : ""}
             </div>
-            <p class="timeline-subtitle">${escapeHtml(item.institution || item.company || "")}</p>
-            ${item.detail ? `<p class="timeline-detail">${escapeHtml(item.detail)}</p>` : ""}
+            <p class="timeline-subtitle">${escapeHtml(item.title)}</p>
+            ${item.detail ? `<p class="timeline-detail">${linkPeopleInText(item.detail)}</p>` : ""}
+            </div>
           </li>`
           )
           .join("")}
@@ -208,13 +257,35 @@
     return `${inner}${escapeHtml(markers)}`;
   }
 
+  /**
+   * 折叠长作者列表，同时保留首位、本人和末位作者及原始顺序。
+   *
+   * Args:
+   *   authorsStr (string): 逗号分隔的作者名单。
+   *
+   * Returns:
+   *   string: 带原生展开交互的作者标记。
+   */
   function renderAuthors(authorsStr) {
     const names = authorsStr
       .split(/[,，]/)
       .map((s) => s.trim())
       .filter(Boolean);
 
-    return names.map(renderAuthorName).join(", ");
+    const full = names.map(renderAuthorName).join(", ");
+    if (names.length <= 5) return full;
+    const preview = [];
+    let omitted = false;
+    names.forEach((name, index) => {
+      if (index < 2 || index === names.length - 1 || isSelfAuthor(stripAuthorMarkers(name).base)) {
+        if (omitted) preview.push("…");
+        preview.push(renderAuthorName(name));
+        omitted = false;
+      } else omitted = true;
+    });
+    const count = names.filter((name, index) => !(index < 2 || index === names.length - 1 || isSelfAuthor(stripAuthorMarkers(name).base))).length;
+    const label = currentLang === "zh" ? `展开其余 ${count} 位` : `Show ${count} more`;
+    return `<span class="authors-preview">${preview.join(", ")}</span><span class="authors-full" hidden>${full}</span> <button type="button" class="text-toggle" data-authors-toggle data-more="${escapeHtml(label)}" aria-expanded="false">${label}</button>`;
   }
 
   function linkPeopleInText(text) {
@@ -261,6 +332,15 @@
       </div>`;
   }
 
+  /**
+   * 在缩略图上方展示年份与发表状态，利用宽幅配图列的垂直空间。
+   *
+   * Args:
+   *   pub (Object): 论文数据。
+   *
+   * Returns:
+   *   string: 保留点击放大功能的配图标记。
+   */
   function renderPubAside(pub) {
     if (!pub.figure) return "";
     const alt = pub.title ? `${pub.title} pipeline` : "Publication figure";
@@ -268,9 +348,8 @@
       <div class="pub-aside">
         ${renderPubHeader(pub)}
         <div class="pub-figure">
-          <img class="pub-figure-zoomable" src="${escapeHtml(pub.figure)}" alt="${escapeHtml(alt)}" loading="lazy" draggable="false" tabindex="0" title="${currentLang === "zh" ? "点击查看大图" : "Click to enlarge"}">
+          <img class="pub-figure-zoomable" src="${escapeHtml(pub.figureThumb || pub.figure)}" data-full-src="${escapeHtml(pub.figure)}"${pub.figureSize ? ` width="${pub.figureSize[0]}" height="${pub.figureSize[1]}"` : ""} alt="${escapeHtml(alt)}" loading="lazy" decoding="async" draggable="false" tabindex="0" title="${currentLang === "zh" ? "点击查看大图" : "Click to enlarge"}">
         </div>
-        ${renderPubLinks(getVisiblePubLinks(pub))}
       </div>`;
   }
 
@@ -326,6 +405,7 @@
   }
 
   function pubMatchesFilter(pub, filter) {
+    if (!window.SiteVisibility.allows(pub)) return false;
     if (filter === "all") return true;
     const roles = getSelfAuthorRoles(pub.authors);
     return roles.includes(filter);
@@ -365,19 +445,19 @@
     const hasFigure = Boolean(pub.figure);
 
     return `
-      <li class="pub-item${hasFigure ? " pub-item-has-figure" : ""}">
+      <li id="publication-${pub._idx}" class="pub-item${hasFigure ? " pub-item-has-figure" : ""}">
         <div class="pub-layout">
           ${hasFigure ? renderPubAside(pub) : ""}
           <div class="pub-body">
             ${hasFigure ? "" : renderPubHeader(pub)}
             <p class="pub-title">${escapeHtml(pub.title)}</p>
-            <p class="pub-authors">${renderAuthors(pub.authors)}</p>
+            <div class="pub-authors">${renderAuthors(pub.authors)}</div>
             ${
               pub.tldr
                 ? `<p class="pub-tldr"><span class="pub-tldr-label">${escapeHtml(tldrLabel)}</span> ${escapeHtml(pub.tldr)}</p>`
                 : ""
             }
-            ${hasFigure ? "" : renderPubLinks(getVisiblePubLinks(pub))}
+            ${renderPubLinks(getVisiblePubLinks(pub))}
           </div>
         </div>
       </li>`;
@@ -541,34 +621,75 @@
     bindPubMenuEvents();
   }
 
+  /**
+   * 将动态日期转换为时间戳；仅有年月时按该时段末日判断新旧。
+   *
+   * Args:
+   *   value (string): YYYY、YYYY-MM 或 YYYY-MM-DD 格式日期。
+   *
+   * Returns:
+   *   number: UTC 时间戳；未知日期返回零。
+   */
+  function newsTimestamp(value) {
+    const parts = String(value).replaceAll(".", "-").split("-").map(Number);
+    if (!parts[0] || parts.some((part) => !Number.isFinite(part))) return 0;
+    return parts.length === 1 ? Date.UTC(parts[0], 11, 31)
+      : parts.length === 2 ? Date.UTC(parts[0], parts[1], 0)
+      : Date.UTC(parts[0], parts[1] - 1, parts[2]);
+  }
+
+  /**
+   * 渲染近三个月动态，较早内容自动折叠并至少保留最新一条。
+   *
+   * Returns:
+   *   void: 更新动态区域的页面内容。
+   */
   function renderNews() {
-    const items = CONTENT[currentLang].news;
+    const items = CONTENT[currentLang].news.filter((item) => window.SiteVisibility.allows(item)).sort((a, b) => newsTimestamp(b.date) - newsTimestamp(a.date));
     const title = CONTENT[currentLang].sections.news;
+    const section = document.getElementById("news");
+    section.hidden = items.length === 0;
 
     if (!items || items.length === 0) {
-      document.getElementById("news").innerHTML = `
-        <h2 class="section-title">${escapeHtml(title)}</h2>
-        <p class="placeholder-msg">${escapeHtml(CONTENT[currentLang].placeholder)}</p>`;
+      section.innerHTML = "";
       return;
     }
 
+    // 以日历月计算阈值；月底向前推三个月时限制到目标月份末日。
+    const now = new Date();
+    const cutoff = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 3, 1));
+    const lastDay = new Date(Date.UTC(cutoff.getUTCFullYear(), cutoff.getUTCMonth() + 1, 0)).getUTCDate();
+    cutoff.setUTCDate(Math.min(now.getUTCDate(), lastDay));
+    const visibleCount = Math.max(1, items.filter((item) => newsTimestamp(item.date) >= cutoff.getTime()).length);
+    const hiddenCount = items.length - visibleCount;
     document.getElementById("news").innerHTML = `
       <h2 class="section-title">${escapeHtml(title)}</h2>
       <ul class="news-list">
         ${items
           .map(
-            (n) => `
-          <li class="news-item">
+            (n, index) => `
+          <li class="news-item"${!newsExpanded && index >= visibleCount ? " hidden" : ""}>
             <span class="news-date">${escapeHtml(n.date)}</span>
-            <span>${escapeHtml(n.text)}</span>
+            <div class="news-content">
+              ${n.parts?.length
+                ? `<strong>${n.parts.map((part) => part.url ? `<a href="${escapeHtml(part.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(part.text)}</a>` : escapeHtml(part.text)).join("")}</strong>`
+                : `<span>${n.url ? `<a href="${escapeHtml(n.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(n.text)}</a>` : escapeHtml(n.text)}</span>`}
+            </div>
           </li>`
           )
           .join("")}
-      </ul>`;
+      </ul>
+      ${hiddenCount > 0 ? `<button type="button" class="text-toggle news-toggle" data-news-toggle aria-expanded="${newsExpanded}">${newsExpanded ? (currentLang === "zh" ? "收起" : "Show less") : (currentLang === "zh" ? `展开其余 ${hiddenCount} 条` : `Show ${hiddenCount} more`)}</button>` : ""}`;
   }
 
+  /**
+   * 渲染项目年份、配图与简介，仓库入口复用论文链接的图标样式。
+   *
+   * Returns:
+   *   void: 更新项目区域的页面内容。
+   */
   function renderProjects() {
-    const items = CONTENT[currentLang].projects;
+    const items = CONTENT[currentLang].projects.filter((item) => window.SiteVisibility.allows(item));
     const title = CONTENT[currentLang].sections.projects;
 
     if (!items || items.length === 0) {
@@ -584,14 +705,18 @@
         ${items
           .map(
             (p) => `
-          <li class="project-item">
+          <li class="project-item${p.image ? " project-item-with-image" : ""}">
+            ${p.image ? `<div class="project-aside">${p.year ? `<span class="pub-year project-year">${escapeHtml(p.year)}</span>` : ""}<img class="project-image pub-figure-zoomable" src="${escapeHtml(p.imageThumb || p.image)}" data-full-src="${escapeHtml(p.image)}"${p.imageSize ? ` width="${p.imageSize[0]}" height="${p.imageSize[1]}"` : ""} alt="${escapeHtml(p.imageAlt || p.name)}" loading="lazy" decoding="async" draggable="false" tabindex="0" title="${currentLang === "zh" ? "点击查看大图" : "Click to enlarge"}"></div>` : ""}
+            <div class="project-content">
+            ${!p.image && p.year ? `<span class="pub-year project-year">${escapeHtml(p.year)}</span>` : ""}
             <p class="project-name">${escapeHtml(p.name)}</p>
             <p class="project-desc">${escapeHtml(p.description)}</p>
             ${
               p.url
-                ? `<div class="project-links"><a href="${escapeHtml(p.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(p.urlLabel || "Link")}</a></div>`
+                ? `<div class="project-links">${renderPubLinks([{ label: p.urlLabel || "Link", url: p.url }])}</div>`
                 : ""
             }
+            </div>
           </li>`
           )
           .join("")}
@@ -599,7 +724,7 @@
   }
 
   function renderAwards() {
-    const items = CONTENT[currentLang].awards;
+    const items = CONTENT[currentLang].awards.filter((item) => window.SiteVisibility.allows(item));
     const title = CONTENT[currentLang].sections.awards;
 
     if (!items || items.length === 0) {
@@ -619,32 +744,6 @@
             <span class="award-year">${escapeHtml(a.year)}</span>
             ${escapeHtml(a.text)}
           </li>`
-          )
-          .join("")}
-      </ul>`;
-  }
-
-  function renderContact() {
-    const contact = CONTENT[currentLang].contact;
-    const labels = CONTENT[currentLang].linkLabels;
-    const title = CONTENT[currentLang].sections.contact;
-
-    const links = [
-      { url: `mailto:${SITE.email}`, label: `${labels.email}: ${SITE.email}` },
-      { url: SITE.links.github, label: labels.github },
-      { url: SITE.links.scholar, label: labels.scholar },
-      { url: SITE.links.orcid, label: labels.orcid },
-      { url: SITE.links.linkedin, label: labels.linkedin },
-    ].filter((l) => l.url && !l.url.endsWith("/"));
-
-    document.getElementById("contact").innerHTML = `
-      <h2 class="section-title">${escapeHtml(title)}</h2>
-      <p>${escapeHtml(contact.intro)}</p>
-      <ul class="contact-links">
-        ${links
-          .map(
-            (l) =>
-              `<li><a href="${escapeHtml(l.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(l.label)}</a></li>`
           )
           .join("")}
       </ul>`;
@@ -676,7 +775,6 @@
   function renderAll() {
     updateMeta();
     renderNav();
-    renderHero();
     renderAbout();
     renderPublications();
     renderTimeline("education", "education");
@@ -684,8 +782,8 @@
     renderTimeline("experience", "experience");
     renderProjects();
     renderAwards();
-    renderContact();
     renderFooter();
+    window.PageUI?.refresh();
   }
 
   function setLang(lang) {
@@ -705,10 +803,54 @@
     btn.addEventListener("click", () => setLang(btn.dataset.lang));
   });
 
-  async function bootstrap() {
-    if (window.SiteUpdated) await SiteUpdated.init();
+  /**
+   * 立即渲染主页，独立启动地区和更新时间查询，避免外部请求阻塞内容。
+   *
+   * Returns:
+   *   void: 启动互不依赖的异步更新。
+   */
+  function bootstrap() {
     setLang(currentLang);
+    window.SiteVisibility.resolveCountry();
+    if (window.SiteUpdated) {
+      window.SiteUpdated.init().then(() => {
+        renderFooter();
+        updatePubCitationStatus();
+      }).catch(() => { /* 更新时间不可用时保留已有页脚，不影响地区判断。 */ });
+    }
   }
+
+  // 展开按钮始终位于作者名单之后，不因切换状态跳到列表上方。
+  document.addEventListener("click", (event) => {
+    const authorButton = event.target.closest?.("[data-authors-toggle]");
+    if (authorButton) {
+      const parent = authorButton.closest(".pub-authors");
+      const expanded = authorButton.getAttribute("aria-expanded") !== "true";
+      parent.querySelector(".authors-preview").hidden = expanded;
+      parent.querySelector(".authors-full").hidden = !expanded;
+      authorButton.setAttribute("aria-expanded", String(expanded));
+      authorButton.textContent = expanded ? (currentLang === "zh" ? "收起" : "Show less") : authorButton.dataset.more;
+    }
+    if (event.target.closest?.("[data-news-toggle]")) {
+      newsExpanded = !newsExpanded;
+      renderNews();
+      document.querySelector("[data-news-toggle]")?.focus();
+    }
+  });
+  document.addEventListener("homepage:reveal-news", () => {
+    newsExpanded = true;
+    renderNews();
+  });
+  document.addEventListener("homepage:region-ready", () => {
+    renderAll();
+  });
+
+  // 搜索定位论文时清除位次筛选，使目标论文一定可见。
+  document.addEventListener("homepage:reveal-publication", () => {
+    pubControlsState.filter = "all";
+    savePubControlsState();
+    renderPublications();
+  });
 
   bootstrap();
 })();

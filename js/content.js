@@ -2,12 +2,12 @@ const SITE = {
   name: "Yuhao Liu",
   nameZh: "刘宇昊",
   email: "Yiqian7a@qq.com",
-  photo: "assets/photo.jpg",
+  photo: "assets/photo.webp",
   cvUrl: "assets/cv.pdf",
   cvAvailable: false,
   links: {
     github: "https://github.com/Yiqian7a",
-    scholar: "https://scholar.google.com/",
+    scholar: "https://scholar.google.com/citations?user=bjwmUaQAAAAJ&hl=zh-CN",
     orcid: "https://orcid.org/",
     linkedin: "https://linkedin.com/in/",
   },
@@ -46,21 +46,22 @@ const CONTENT = {
       contact: "Contact",
     },
     hero: {
-      affiliation: "Shandong University",
+      affiliation: "Research Assistant · ShanghaiTech University",
       bio: "From LLMs to embodied agents — pushing AI toward real-world impact.",
       cvLabel: "Download CV",
     },
     about: {
-      text: "Hello, I am Yuhao Liu. I am currently working as a research assistant to Prof. Yuexin Ma at Shanghai University of Science and Technology, and I am preparing to apply for a Ph.D. program. I completed my undergraduate studies in statistics at Shandong University, within the program dedicated to data science and artificial intelligence. My research interests include computer vision, large language models, and embodied intelligence. I have one first-author preprint, and two additional papers available as preprints. I also completed a six-month research internship at Huawei’s automotive division, during which I worked on the research aspects related to that paper. I have led several end-to-end AI projects and have won numerous awards in competitions. I am committed to bridging the gap between cutting-edge AI research and its practical application, and I am actively seeking doctoral opportunities to further explore areas such as embodied intelligence, world models, and efficient AI systems.",
+      text: "Hello, I am Yuhao Liu. I received my bachelor's degree in Statistics from Shandong University through the Data Science and Artificial Intelligence Experimental Program. I am currently a research assistant working with Prof. Yuexin Ma at ShanghaiTech University. My research interests focus on embodied AI, multimodal large models, and world models, exploring how intelligent agents understand their environments and act upon them.",
+      opportunity: "I am seeking Ph.D. opportunities in these research areas. Please feel free to get in touch!",
       tagsLabel: "Research Interests",
-      tags: ["Embodied AI", "MLLMs", "World Model"],
+      tags: ["Embodied AI", "Multimodal Large Models", "World Models"],
     },
     education: [
       {
-        title: "B.S. in Statistics (Data Science and AI Program)",
-        institution: "Shandong University (Weihai)",
+        title: "B.S. in Statistics",
+        institution: "Shandong University",
+        logo: "assets/sdu-logo.svg",
         date: "2022 — 2026",
-        detail: "GPA：3.61 / 5",
       },
     ],
     publications: [
@@ -70,6 +71,8 @@ const CONTENT = {
         authors: "Yuhao Liu, Yiming Zhong, Hanqing Wang, Shaocheng Yan, Yuhang Zhang, Wenzhou Lyu, Ziyang Ding, Wei Zhang, Xue Zhao, Jin Pan, Yuexin Ma†, Xinge Zhu",
         tldr: "A token-routed multitask framework for generalizable 2D-3D affordance perception, unifying multiple affordance tasks within a single model.",
         figure: "assets/pubs/UniAfford.png",
+        figureThumb: "assets/pubs/UniAfford.thumb.webp",
+        figureSize: [640, 290],
         preprint: true,
         badges: [
           { text: "Preprint", type: "status" },
@@ -87,8 +90,12 @@ const CONTENT = {
         authors: "Ziyang Ding, Linjian Meng, Yiming Wu, Yuhan Li, Yuhao Liu, Zhen Zhao",
         tldr: "Latent contrastive training and trajectory-level reinforcement learning improve exploratory visual reasoning in multimodal large language models.",
         preprint: false,
+        // 原图来自 https://raw.githubusercontent.com/Oscar-dzy/CoLVR/main/assets/framework.png
+        figure: "assets/pubs/CoLVR.png",
+        figureThumb: "assets/pubs/CoLVR.thumb.webp",
+        figureSize: [640, 449],
         badges: [
-          { text: "NeurIPS 2026", type: "venue" },
+          { text: "NeurIPS", type: "venue" },
         ],
         links: [
           { label: "arXiv", url: "https://arxiv.org/abs/2605.08802" },
@@ -101,18 +108,71 @@ const CONTENT = {
         authors: "Hanqing Wang, Mingyu Liu, Xiaoyu Chen, Chengwei MA, Yiming Zhong, Wenti Yin, Yuhao Liu, Zhiqing Cui, Jiahao Yuan, Lu Dai, Zhiyuan Ma†, Hui Xiong†",
         tldr: "Introduces the VIDA dataset and a multimodal framework that learns 3D affordance grounding from human-object interaction videos using latent action priors and a spatial-aware loss.",
         preprint: false,
+        // 原图来自 https://hq-king.github.io/images/videoafford.png
+        figure: "assets/pubs/VideoAfford.png",
+        figureThumb: "assets/pubs/VideoAfford.thumb.webp",
+        figureSize: [640, 220],
         badges: [
-          { text: "NeurIPS 2026", type: "venue" },
+          { text: "NeurIPS", type: "venue" },
         ],
         links: [
           { label: "arXiv", url: "https://arxiv.org/abs/2602.09638" },
         ],
       },
     ],
-    news: [],
-    experience: [],
-    projects: [],
-    awards: [],
+    news: [
+      {
+        date: "2026",
+        parts: [
+          { text: "🎉 " },
+          { text: "CoLVR", url: "https://arxiv.org/abs/2605.08802" },
+          { text: " and " },
+          { text: "VideoAfford", url: "https://arxiv.org/abs/2602.09638" },
+          { text: " were accepted by NeurIPS 2026!" },
+        ],
+      },
+    ],
+    experience: [
+      {
+        title: "Research Assistant Intern",
+        company: "4DVLab",
+        // 官网原始图标：https://4dvlab.github.io/imgs/logo.png
+        logo: "assets/4dvlab-logo.webp",
+        logoTheme: "dark",
+        url: "https://4dvlab.github.io/",
+        date: "2026.07 — Present",
+      },
+      // 每条内容独立配置国家黑名单；这是展示偏好，不代表政策适用判断。
+      {
+        title: "Research Intern",
+        company: "Yinwang",
+        // 官网导航原始图标：https://www.yinwang.com/marketingcloud/pep/asset/20000004/yinwang/img/g.png
+        logo: "assets/yinwang-logo.png",
+        url: "https://www.yinwang.com/cn/",
+        date: "2025.11 — 2026.06",
+        // 按已核实的华为相关限制设置展示偏好，非个人申请限制或完整制裁名单。
+        // 美国、英国、加拿大、澳大利亚、德国、瑞典；中英文条目保持一致。
+        blockedCountries: ["US", "GB", "CA", "AU", "DE", "SE"],
+      },
+    ],
+    projects: [
+      {
+        name: "AI Cat Feeder",
+        year: "2023",
+        description: "An outdoor smart feeder that automatically detects stray cats and dispenses food. Built with NanoDet, ncnn, and OpenCV on an Orange Pi 3 LTS running Ubuntu 22.04, integrating embedded visual recognition with sensors and feeding control.",
+        image: "assets/projects/ai-cat-feeder.png",
+        imageThumb: "assets/projects/ai-cat-feeder.thumb.webp",
+        imageSize: [640, 360],
+        imageAlt: "AI Cat Feeder project poster",
+        url: "https://github.com/Yiqian7a/AI-Cat-Feeder",
+        urlLabel: "GitHub",
+      },
+    ],
+    awards: [
+      { year: "2026", text: "Outstanding Graduate, Shandong University, Class of 2026" },
+      { year: "2024", text: "Second Prize, ASC24 Student Supercomputer Challenge" },
+      { year: "2024", text: "National Second Prize, 14th MathorCup Mathematical Application Challenge" },
+    ],
     placeholder: "Coming soon — content to be added.",
     contact: {
       intro: "Feel free to reach out via email or the links below.",
@@ -184,21 +244,22 @@ const CONTENT = {
       contact: "联系方式",
     },
     hero: {
-      affiliation: "山东大学",
+      affiliation: "研究助理 · 上海科技大学",
       bio: "从大模型到具身智能——让AI走向现实世界",
       cvLabel: "下载简历",
     },
     about: {
-      text: "你好，我是刘宇昊，本科毕业于山东大学统计学专业（数据科学与人工智能实验班），目前在上海科技大学担任马月昕教授的研究助理。我的研究兴趣集中在具身智能、多模态大模型与世界模型，探索智能体如何理解环境并据此采取行动。我目前正在寻找相关方向的博士机会。",
+      text: "你好，我是刘宇昊，本科毕业于山东大学统计学专业（数据科学与人工智能实验班），目前在上海科技大学担任马月昕教授的研究助理。我的研究兴趣集中在具身智能、多模态大模型与世界模型，探索智能体如何理解环境并据此采取行动。",
+      opportunity: "正在寻找相关研究方向的博士机会，欢迎联系！",
       tagsLabel: "研究方向",
       tags: ["具身智能", "多模态大模型", "世界模型"],
     },
     education: [
       {
-        title: "统计学（数据科学与人工智能实验班） 学士",
-        institution: "山东大学（威海）",
+        title: "统计学学士",
+        institution: "山东大学",
+        logo: "assets/sdu-logo.svg",
         date: "2022 — 2026",
-        detail: "GPA：86.06 / 100",
       },
     ],
     publications: [
@@ -208,6 +269,8 @@ const CONTENT = {
         authors: "刘宇昊, 钟奕鸣, 王涵情, 颜绍程, 张宇航, 吕文周, 丁子杨, 张伟, 赵雪, 潘津, 马月昕†, 祝新革",
         tldr: "提出一种基于 token 路由的多任务学习框架，实现可泛化的 2D-3D 可供性感知，统一跨任务与跨模态学习。",
         figure: "assets/pubs/UniAfford.png",
+        figureThumb: "assets/pubs/UniAfford.thumb.webp",
+        figureSize: [640, 290],
         preprint: true,
         badges: [
           { text: "Preprint", type: "status" },
@@ -225,9 +288,11 @@ const CONTENT = {
         authors: "丁子杨, Linjian Meng, Yiming Wu, Yuhan Li, 刘宇昊, Zhen Zhao",
         tldr: "通过潜在空间对比训练与轨迹级强化学习，增强多模态大语言模型在潜在视觉推理中的探索能力。",
         preprint: false,
-        figure: "https://github.com/Oscar-dzy/CoLVR/raw/main/assets/framework.png",
+        figure: "assets/pubs/CoLVR.png",
+        figureThumb: "assets/pubs/CoLVR.thumb.webp",
+        figureSize: [640, 449],
         badges: [
-          { text: "NeurIPS 2026", type: "venue" },
+          { text: "NeurIPS", type: "venue" },
         ],
         links: [
           { label: "arXiv", url: "https://arxiv.org/abs/2605.08802" },
@@ -239,20 +304,67 @@ const CONTENT = {
         title: "VideoAfford: Grounding 3D Affordance from Human-Object-Interaction Videos via Multimodal Large Language Model",
         authors: "王涵情, Mingyu Liu, Xiaoyu Chen, Chengwei MA, 钟奕鸣, Wenti Yin, 刘宇昊, Zhiqing Cui, Jiahao Yuan, Lu Dai, Zhiyuan Ma†, Hui Xiong†",
         tldr: "构建 VIDA 数据集，结合潜在动作先验与空间感知损失，使多模态大语言模型能够从人–物交互视频中学习三维可供性定位与推理。",
-        figure: "https://hq-king.github.io/images/videoafford.png",
+        figure: "assets/pubs/VideoAfford.png",
+        figureThumb: "assets/pubs/VideoAfford.thumb.webp",
+        figureSize: [640, 220],
         preprint: false,
         badges: [
-          { text: "NeurIPS 2026", type: "venue" },
+          { text: "NeurIPS", type: "venue" },
         ],
         links: [
           { label: "arXiv", url: "https://arxiv.org/abs/2602.09638" },
         ],
       },
     ],
-    news: [],
-    experience: [],
-    projects: [],
-    awards: [],
+    news: [
+      {
+        date: "2026",
+        parts: [
+          { text: "🎉 " },
+          { text: "CoLVR", url: "https://arxiv.org/abs/2605.08802" },
+          { text: " 和 " },
+          { text: "VideoAfford", url: "https://arxiv.org/abs/2602.09638" },
+          { text: " 被 NeurIPS 2026 录用！" },
+        ],
+      },
+    ],
+    experience: [
+      {
+        title: "科研助理实习生",
+        company: "4DVLab",
+        logo: "assets/4dvlab-logo.webp",
+        logoTheme: "dark",
+        url: "https://4dvlab.github.io/",
+        date: "2026.07 — 至今",
+      },
+      // 与英文条目保持一致；地区筛选同时作用于页面和搜索。
+      {
+        title: "科研实习生",
+        company: "引望",
+        logo: "assets/yinwang-logo.png",
+        url: "https://www.yinwang.com/cn/",
+        date: "2025.11 — 2026.06",
+        blockedCountries: ["US", "GB", "CA", "AU", "DE", "SE"],
+      },
+    ],
+    projects: [
+      {
+        name: "人工智能自动喂猫机",
+        year: "2023",
+        description: "面向流浪猫的户外智能喂食设备，可自动识别猫咪并投放猫粮。基于 NanoDet、ncnn 与 OpenCV，在搭载 Ubuntu 22.04 的 Orange Pi 3 LTS 开发板上部署视觉识别，结合传感器与投喂控制，实现嵌入式 AI 的实际应用。",
+        image: "assets/projects/ai-cat-feeder.png",
+        imageThumb: "assets/projects/ai-cat-feeder.thumb.webp",
+        imageSize: [640, 360],
+        imageAlt: "人工智能自动喂猫机项目展示海报",
+        url: "https://github.com/Yiqian7a/AI-Cat-Feeder",
+        urlLabel: "GitHub",
+      },
+    ],
+    awards: [
+      { year: "2026", text: "山东大学2026届优秀毕业生" },
+      { year: "2024", text: "ASC24世界大学生超级计算机竞赛二等奖" },
+      { year: "2024", text: "第十四届MathorCup数学应用挑战赛全国二等奖" },
+    ],
     placeholder: "即将更新 — 内容待补充。",
     contact: {
       intro: "欢迎通过邮件或以下链接与我联系。",

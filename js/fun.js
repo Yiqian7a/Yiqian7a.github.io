@@ -130,7 +130,8 @@
   function isInteractive(el) {
     if (!el || el === document.documentElement) return false;
     if (el.closest(".lightbox")) return true;
-    if (el.closest("a, button, input, select, textarea, label, .lang-btn, .pub-link, .pub-author-link, .pub-menu")) {
+    // 折叠控件与搜索框属于交互区域，避免触发页面的点击特效。
+    if (el.closest("a, button, input, select, textarea, label, summary, dialog, .lang-btn, .pub-link, .pub-author-link, .pub-menu")) {
       return true;
     }
     if (el.closest(".pub-figure-zoomable")) return true;
@@ -700,7 +701,8 @@
     lightboxPanMoved = false;
     hideZoomIndicator();
 
-    lightboxImg.src = img.src;
+    // 列表仅加载轻量缩略图；打开查看器时才请求高清原图，兼容旧图片条目。
+    lightboxImg.src = img.dataset.fullSrc || img.src;
     lightboxImg.alt = img.alt;
     applyLightboxTransform();
 

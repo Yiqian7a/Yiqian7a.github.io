@@ -285,15 +285,62 @@ main {
 
 .hero-links {
   display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
 .hero-links a {
-  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+/* 图标跟随主题颜色，保留清晰的键盘焦点。 */
+.contact-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex: 0 0 auto;
+}
+
+.hero-links a:hover {
+  background: var(--color-tag-bg);
+  border-color: var(--color-accent);
+}
+
+.hero-links a:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+/* 校标与教育内容并列，窄屏下允许文字自然换行。 */
+.timeline-item-with-logo {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.institution-logo {
+  width: 104px;
+  height: 64px;
+  padding: 8px;
+  background: #fff;
+  border-radius: var(--radius);
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+.timeline-content {
+  flex: 1;
+  min-width: 0;
 }
 
 .hero-cv {
@@ -818,6 +865,33 @@ main {
 
 .project-item:last-child {
   margin-bottom: 0;
+}
+
+/* 项目图文并列展示，移动端改为上下排列，配图保持原始比例。 */
+.project-item-with-image {
+  display: grid;
+  grid-template-columns: minmax(0, 180px) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.project-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+@media (max-width: 600px) {
+  .project-item-with-image {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.75rem;
+  }
+
+  .project-image-link {
+    max-width: 320px;
+  }
 }
 
 .project-name {
