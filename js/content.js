@@ -60,7 +60,7 @@ const CONTENT = {
         title: "B.S. in Statistics (Data Science and AI Program)",
         institution: "Shandong University (Weihai)",
         date: "2022 — 2026",
-        detail: "GPA：86.06 / 100",
+        detail: "GPA：3.61 / 5",
       },
     ],
     publications: [
@@ -76,9 +76,37 @@ const CONTENT = {
         ],
         links: [
           { label: "Page", url: "https://4dvlab.github.io/UniAfford" },
-          { label: "Arxiv", url: "https://arxiv.org/abs/2609.37264" },
+          { label: "arXiv", url: "https://arxiv.org/abs/2609.37264" },
         ],
         citations: 0,
+      },
+      // 录用信息见 arXiv 与作者主页；保留论文原始作者顺序。
+      {
+        year: "2026",
+        title: "CoLVR: Enhancing Exploratory Latent Visual Reasoning via Contrastive Optimization",
+        authors: "Ziyang Ding, Linjian Meng, Yiming Wu, Yuhan Li, Yuhao Liu, Zhen Zhao",
+        tldr: "Latent contrastive training and trajectory-level reinforcement learning improve exploratory visual reasoning in multimodal large language models.",
+        preprint: false,
+        badges: [
+          { text: "NeurIPS 2026", type: "venue" },
+        ],
+        links: [
+          { label: "arXiv", url: "https://arxiv.org/abs/2605.08802" },
+          { label: "Code", url: "https://github.com/Oscar-dzy/CoLVR" },
+        ],
+      },
+      {
+        year: "2026",
+        title: "VideoAfford: Grounding 3D Affordance from Human-Object-Interaction Videos via Multimodal Large Language Model",
+        authors: "Hanqing Wang, Mingyu Liu, Xiaoyu Chen, Chengwei MA, Yiming Zhong, Wenti Yin, Yuhao Liu, Zhiqing Cui, Jiahao Yuan, Lu Dai, Zhiyuan Ma†, Hui Xiong†",
+        tldr: "Introduces the VIDA dataset and a multimodal framework that learns 3D affordance grounding from human-object interaction videos using latent action priors and a spatial-aware loss.",
+        preprint: false,
+        badges: [
+          { text: "NeurIPS 2026", type: "venue" },
+        ],
+        links: [
+          { label: "arXiv", url: "https://arxiv.org/abs/2602.09638" },
+        ],
       },
     ],
     news: [],
@@ -161,7 +189,7 @@ const CONTENT = {
       cvLabel: "下载简历",
     },
     about: {
-      text: "你好，我是刘宇昊。我目前在上海科技大学担任马月昕教授的研究助理，正在准备申请学术型博士。本科毕业于山东大学统计学专业（数据科学与人工智能实验班）。我的研究方向涵盖计算机视觉、大语言模型和具身智能。目前有一篇一作预印本，另有两篇非一作预印本。曾在华为车 BU 进行了为期六个月的科研实习，期间主要围绕一作论文的核心研究工作展开。我曾主导了多个全栈AI的工程项目，也获得了多项竞赛奖项。我致力于弥合前沿AI研究与实际部署之间的鸿沟，正在积极寻找博士机会，进一步探索具身智能、世界模型和高效AI系统方向。",
+      text: "你好，我是刘宇昊，本科毕业于山东大学统计学专业（数据科学与人工智能实验班），目前在上海科技大学担任马月昕教授的研究助理。我的研究兴趣集中在具身智能、多模态大模型与世界模型，探索智能体如何理解环境并据此采取行动。我目前正在寻找相关方向的博士机会。",
       tagsLabel: "研究方向",
       tags: ["具身智能", "多模态大模型", "世界模型"],
     },
@@ -186,9 +214,39 @@ const CONTENT = {
         ],
         links: [
           { label: "Page", url: "https://4dvlab.github.io/UniAfford" },
-          { label: "Arxiv", url: "https://arxiv.org/abs/2609.37264" },
+          { label: "arXiv", url: "https://arxiv.org/abs/2609.37264" },
         ],
         citations: 0,
+      },
+      // 已确认的中文姓名沿用现有条目；其余作者保留英文姓名，避免按拼音猜测。
+      {
+        year: "2026",
+        title: "CoLVR: Enhancing Exploratory Latent Visual Reasoning via Contrastive Optimization",
+        authors: "丁子杨, Linjian Meng, Yiming Wu, Yuhan Li, 刘宇昊, Zhen Zhao",
+        tldr: "通过潜在空间对比训练与轨迹级强化学习，增强多模态大语言模型在潜在视觉推理中的探索能力。",
+        preprint: false,
+        figure: "https://github.com/Oscar-dzy/CoLVR/raw/main/assets/framework.png",
+        badges: [
+          { text: "NeurIPS 2026", type: "venue" },
+        ],
+        links: [
+          { label: "arXiv", url: "https://arxiv.org/abs/2605.08802" },
+          { label: "Code", url: "https://github.com/Oscar-dzy/CoLVR" },
+        ],
+      },
+      {
+        year: "2026",
+        title: "VideoAfford: Grounding 3D Affordance from Human-Object-Interaction Videos via Multimodal Large Language Model",
+        authors: "王涵情, Mingyu Liu, Xiaoyu Chen, Chengwei MA, 钟奕鸣, Wenti Yin, 刘宇昊, Zhiqing Cui, Jiahao Yuan, Lu Dai, Zhiyuan Ma†, Hui Xiong†",
+        tldr: "构建 VIDA 数据集，结合潜在动作先验与空间感知损失，使多模态大语言模型能够从人–物交互视频中学习三维可供性定位与推理。",
+        figure: "https://hq-king.github.io/images/videoafford.png",
+        preprint: false,
+        badges: [
+          { text: "NeurIPS 2026", type: "venue" },
+        ],
+        links: [
+          { label: "arXiv", url: "https://arxiv.org/abs/2602.09638" },
+        ],
       },
     ],
     news: [],
