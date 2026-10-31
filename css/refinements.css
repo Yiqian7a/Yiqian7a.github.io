@@ -1,0 +1,148 @@
+/* 仅在顶部使用左右布局，论文和项目始终获得完整内容宽度。 */
+:root {
+  --max-width: 1120px;
+  --section-gap: 1.8rem;
+  --page-padding-y: 1.75rem;
+  --pub-figure-width: 210px;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg: #151515;
+  --color-surface: #1d1d1d;
+  --color-text: #eeeeee;
+  --color-text-muted: #b4b4b4;
+  --color-accent: #93b8ff;
+  --color-accent-hover: #bad1ff;
+  --color-border: #373737;
+  --color-tag-bg: #252b36;
+  --color-tag-text: #b9ceef;
+  --color-placeholder: #929292;
+}
+
+.page-layout { display: block; }
+.intro-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 230px;
+  grid-template-areas: "about hero";
+  gap: 2rem;
+  align-items: center;
+  margin-bottom: var(--section-gap);
+}
+.intro-grid #about { grid-area: about; margin: 0; }
+.intro-grid #hero { grid-area: hero; margin: 0; gap: 0.85rem; }
+.hero-photo { width: 100%; max-width: 230px; height: auto; margin: 0 auto; border-radius: 12px; }
+.hero-body { text-align: center; }
+.hero-name { font-size: 1.5rem; }
+.hero-bio { font-size: 0.85rem; margin-bottom: 0.75rem; }
+.hero-links { justify-content: flex-start; gap: 0.45rem; }
+.hero-links a { padding: 0.35rem 0.65rem; font-size: 0.85rem; }
+.about-text { margin-bottom: 0.8rem; line-height: 1.8; }
+.profile-name { margin: 0 0 0.3rem; font-size: clamp(1.7rem, 3vw, 2.25rem); line-height: 1.3; letter-spacing: -0.03em; }
+.profile-name span { font-size: 0.7em; color: var(--color-text-muted); font-weight: 400; }
+.profile-role { margin: 0 0 0.9rem; color: var(--color-text-muted); font-size: 0.95rem; }
+.interest-tags { gap: 0.4rem; margin-bottom: 0.75rem; }
+.interest-tag { padding: 0.15rem 0.65rem; }
+/* 博士意向独立呈现；仅装饰圆点动效，不反复触发屏幕阅读器。 */
+.opportunity { display: flex; width: fit-content; max-width: 100%; align-items: center; gap: 0.75rem; margin: 0 0 0.8rem; padding: 0.65rem 0.85rem; border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); font-size: 0.9rem; }
+/* 沿用参考主页的实心绿点与独立扩散圆环，增强明暗主题下的可见性。 */
+.opportunity-dot { position: relative; width: 9px; height: 9px; border-radius: 50%; background: #22c55e; flex: 0 0 auto; }
+.opportunity-dot::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid #22c55e; opacity: 0; animation: opportunity-pulse 2s ease-out infinite; }
+@keyframes opportunity-pulse { 0% { transform: scale(0.6); opacity: 0.8; } 100% { transform: scale(1.6); opacity: 0; } }
+.section-title { font-size: 1.2rem; border-bottom-width: 1px; margin-bottom: 0.85rem; padding-bottom: 0.35rem; }
+.pub-section-head { border-bottom-width: 1px; }
+.experience-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
+.experience-grid:has(> #experience[hidden]) { grid-template-columns: 1fr; }
+.experience-grid .section { margin-bottom: var(--section-gap); }
+/* 经历采用紧凑的横向图文布局，机构与时间同排，身份置于机构下方。 */
+.experience-grid .timeline-item { padding: 0; border: 0; margin-bottom: 1rem; }
+.experience-grid .timeline-item-with-logo { align-items: center; gap: 0.75rem; }
+.experience-grid .timeline-header { flex-direction: row; align-items: baseline; gap: 0.15rem 0.5rem; }
+.experience-grid .timeline-date { margin-left: auto; font-size: 0.75rem; }
+.experience-grid .timeline-title { font-size: 0.95rem; }
+.experience-grid .timeline-title a { color: var(--color-text); }
+.experience-grid .timeline-subtitle { font-size: 0.85rem; }
+/* 图标统一占位尺寸，机构文字从同一位置开始；内边距不挤占文字列。 */
+.experience-grid .institution-logo { width: 100px; height: 56px; padding: 8px; border: 1px solid var(--color-border); }
+/* 4DVLab 的四周留出同色背景，保留官网原图的蓝灰配色。 */
+.experience-grid .institution-logo-dark { background: #333; border-color: #333; }
+.news-item { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 1rem; }
+.news-date { padding-top: 0.15rem; }
+/* hidden 必须优先于网格样式，防止已折叠动态和地区限定经历露出。 */
+[hidden] { display: none !important; }
+.text-toggle { display: inline; padding: 0; margin-left: 0.3rem; border: 0; background: transparent; color: var(--color-accent); font: inherit; font-size: 0.8rem; white-space: nowrap; cursor: pointer; }
+.text-toggle:hover { text-decoration: underline; }
+.news-toggle { margin: 0.4rem 0 0 88px; }
+.news-item { margin-bottom: 0.5rem; }
+.pub-section-head { margin-bottom: 0.85rem; }
+.pub-item { margin-bottom: 1.1rem; padding-bottom: 1.1rem; }
+/* 缩略图限高且不裁剪；文本自然增长，避免不同 pipeline 撑出高大的空白列。 */
+.pub-item-has-figure .pub-layout { grid-template-columns: 200px minmax(0, 1fr); gap: 1.25rem; align-items: start; }
+.pub-aside { gap: 0.55rem; padding-top: 0.2rem; }
+.pub-figure img { width: 100%; height: auto; max-height: 140px; object-fit: contain; }
+.pub-body .pub-title { line-height: 1.45; margin-bottom: 0.35rem; }
+.pub-body .pub-links { margin-top: 0.5rem; }
+.pub-body .pub-tldr { margin-bottom: 0; }
+/* 项目年份置于配图上方，按钮与论文链接共享样式。 */
+.project-aside { display: flex; flex-direction: column; align-items: center; gap: 0.55rem; min-width: 0; }
+.project-aside .project-image { width: 100%; max-width: 100%; }
+.project-content .project-links { margin-top: 0.5rem; }
+.page-tools { display: flex; gap: 0.4rem; margin-left: auto; }
+.page-tools button, .search-close {
+  font: inherit; font-size: 0.85rem; color: var(--color-text-muted);
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius); padding: 0.3rem 0.6rem; cursor: pointer; white-space: nowrap;
+}
+.nav { gap: 0.9rem; }
+.nav-links { gap: 0.2rem 0.75rem; }
+button:focus-visible, summary:focus-visible, a:focus-visible, input:focus-visible {
+  outline: 2px solid var(--color-accent); outline-offset: 3px;
+}
+
+/* 搜索使用原生对话框：支持键盘访问、背景遮罩和窄屏布局。 */
+.search-dialog {
+  width: min(640px, calc(100vw - 2rem)); max-height: min(75dvh, 700px);
+  margin: 12vh auto auto; padding: 1rem;
+  border: 1px solid var(--color-border); border-radius: 10px;
+  color: var(--color-text); background: var(--color-surface);
+  box-shadow: 0 16px 70px #0004;
+}
+.search-dialog::backdrop { background: #0007; }
+.search-heading { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; }
+.search-heading label { font-weight: 600; }
+.search-dialog input { width: 100%; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-bg); color: var(--color-text); font: inherit; }
+.search-status { color: var(--color-text-muted); font-size: 0.8rem; margin: 0.65rem 0; }
+.search-results { display: grid; gap: 0.3rem; }
+.search-result { display: grid; gap: 0.2rem; text-align: left; padding: 0.7rem; border: 0; border-radius: var(--radius); background: transparent; color: var(--color-text); font: inherit; cursor: pointer; }
+.search-result small { color: var(--color-text-muted); }
+.search-result:hover, .search-result:focus-visible { background: var(--color-tag-bg); }
+
+@media (max-width: 900px) {
+  .nav { flex-wrap: wrap; height: auto; padding-top: 0.65rem; padding-bottom: 0.65rem; }
+  .site-header { height: auto; }
+  .nav-links { order: 3; flex-basis: 100%; }
+  html { scroll-padding-top: 120px; }
+  .intro-grid { gap: 1.75rem; grid-template-columns: minmax(0, 1fr) 200px; }
+}
+@media (max-width: 640px) {
+  .pub-item-has-figure .pub-layout { grid-template-columns: 1fr; gap: 0.65rem; }
+  .pub-aside { width: 100%; max-width: 260px; margin: 0; }
+  .project-aside { width: 100%; max-width: 320px; }
+  .pub-figure img { max-height: 155px; }
+  .intro-grid { grid-template-columns: 1fr; grid-template-areas: "hero" "about"; }
+  .intro-grid #hero { align-items: center; }
+  .hero-photo { width: 130px; }
+  .experience-grid { grid-template-columns: 1fr; gap: 0; }
+  .news-item { grid-template-columns: 52px minmax(0, 1fr); gap: 0.5rem; }
+  .news-toggle { margin-left: 60px; }
+  .page-tools button { min-height: 36px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .opportunity-dot::after { animation: none; opacity: 0.4; }
+}
+@media print {
+  :root[data-theme] { --color-bg: #fff; --color-text: #111; --color-text-muted: #444; --color-border: #ddd; }
+  .page-tools, .search-dialog { display: none; }
+}
